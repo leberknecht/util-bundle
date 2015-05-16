@@ -1,4 +1,4 @@
-## Instalation
+## Installation
 
 Require the bundle via composer:
 
