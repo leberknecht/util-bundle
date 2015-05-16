@@ -49,7 +49,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
         }
         $serviceMemberName = lcfirst($reflectionClass->getShortName());
         $generatedCode = $this->templating->render(
-            'SeleniorUtilBundle::phpunit.template.php.twig',
+            'UtilBundle::phpunit.template.php.twig',
             [
                 'test_namespace' => $testNamespace,
                 'use_statements' => $useStatments,

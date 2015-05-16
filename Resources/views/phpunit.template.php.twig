@@ -29,7 +29,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 
             $this->{{ service_member_name }} = new {{ original_short_name }}(
 {% for mock in mocks %}
-                $this->${{ mock.member_name }},
+                $this->{{ mock.member_name }},
 {% endfor %}
             );
         }
