@@ -11,9 +11,9 @@ class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
     * @var PHPUnit_Framework_MockObject_MockObject|\{{ mock.mocked_class_name }}
     */
     private ${{ mock.member_name }};
-    {% endfor %}
+{% endfor %}
 
-    /**
+   /**
     * @var PHPUnit_Framework_MockObject_MockObject|\{{ original_full_name }}
     */
     private ${{ service_member_name }};

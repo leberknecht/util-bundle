@@ -18,10 +18,15 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
     {
         $this
             ->setName('tps:util:generate-service-test')
-            ->addArgument('class', InputArgument::REQUIRED, 'fq class name of service')
-            ->setDescription('Generates a basic php-unit file with mocked services');
+            ->addArgument('class', InputArgument::REQUIRED, 'full-qualified class name of service')
+            ->setDescription('Generates a base php-unit file with mocked services');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->templating = $this->getContainer()->get('templating');
@@ -45,20 +50,8 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
                 'mocks' => $mocks
             ]
         );
-
-        $dirGuess = 'src/' . str_replace('\\', '/', $testNamespace);
-        $fullName = $dirGuess . '/' . $reflectionClass->getShortName() . 'Test.php';
-        $dialog = $this->getHelper('dialog');
-        if (is_dir($dirGuess) && $dialog->askConfirmation(
-                $output,
-                '<question>Create "'.$fullName.'"?</question>',
-                false
-            )) {
-                file_put_contents($fullName, $generatedCode);
-                return;
-        } else {
-            $output->writeln($generatedCode);
-        }
+        $output->writeln($generatedCode);
+        $this->writeTestFile($output, $reflectionClass, $generatedCode);
     }
 
     /**
@@ -99,5 +92,27 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
             ];
         }
         return $mocksInfo;
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param $reflectionClass
+     * @param $generatedCode
+     */
+    protected function writeTestFile(OutputInterface $output, $reflectionClass, $generatedCode)
+    {
+        $dirGuess = 'src/' . str_replace('\\', '/', $this->getTestNamespace($reflectionClass, $output));
+        $fullName = $dirGuess . '/' . $reflectionClass->getShortName() . 'Test.php';
+        $dialog = $this->getHelper('dialog');
+        if (is_dir($dirGuess)) {
+            $question = '<question>Create "' . $fullName . '"?</question>';
+            if (is_file($fullName)) {
+                $output->writeln('<error>File "' . $fullName . '" exists!<error>');
+                $question = '<question>Overwrite file "' . $fullName . '"?</question>';
+            }
+            if ($dialog->askConfirmation($output, $question, false)) {
+                file_put_contents($fullName, $generatedCode);
+            }
+        }
     }
 }
