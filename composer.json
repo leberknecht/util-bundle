@@ -19,8 +19,7 @@
         "symfony/framework-bundle":         ">=2.0.16,~2.0",
         "symfony/twig-bundle":              "*",
         "twig/twig":                        ">=1.0,<2.0-dev",
-        "sensio/framework-extra-bundle":    "*",
-        "psr/log":                          "1.0.0"
+        "sensio/framework-extra-bundle":    "*"
     },
 
     "require-dev": {
