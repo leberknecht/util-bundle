@@ -92,7 +92,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
             $output->writeln('checking parameter ' . $parameter->getClass()->getName());
             $parameterClass = $parameter->getClass();
 
-            $memberName = lcfirst($parameterClass->getShortName());
+            $memberName = lcfirst($parameterClass->getShortName()) . 'Mock';
             $mocksInfo[] = [
                 'mocked_class_name' => $parameterClass->getName(),
                 'member_name' => $memberName,
