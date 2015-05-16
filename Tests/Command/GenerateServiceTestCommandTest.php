@@ -19,6 +19,44 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
      */
     private $twigMock;
 
+    private $expected ='checking parameter Symfony\Component\Form\Form
+checking parameter Symfony\Bundle\TwigBundle\TwigEngine
+<?php
+namespace tps\UtilBundle\Tests\Tests\Fixtures;
+
+use PHPUnit_Framework_MockObject_MockObject;
+use tps\UtilBundle\Tests\Fixtures\ExampleClass;
+
+class ExampleClassTest extends \PHPUnit_Framework_TestCase
+{
+   /**
+    * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Form\Form
+    */
+    private $formMock;
+   /**
+    * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Bundle\TwigBundle\TwigEngine
+    */
+    private $twigEngineMock;
+
+   /**
+    * @var PHPUnit_Framework_MockObject_MockObject|\tps\UtilBundle\Tests\Fixtures\ExampleClass
+    */
+    private $exampleClass;
+
+    public function setUp()
+    {
+        $this->formMock = $this->getMockBuilder(\'Symfony\Component\Form\Form\')
+            ->disableOriginalConstructor()->getMock();
+        $this->twigEngineMock = $this->getMockBuilder(\'Symfony\Bundle\TwigBundle\TwigEngine\')
+            ->disableOriginalConstructor()->getMock();
+
+        $this->exampleClass = new ExampleClass(
+            $this->formMock,            $this->twigEngineMock
+        );
+    }
+}
+';
+
     public function testExecuteMissingClass()
     {
         $application = new Application();
@@ -59,45 +97,6 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
 
     public function testExecuteValidClass()
     {
-        $expected ='checking parameter Doctrine\ORM\EntityManager
-checking parameter Symfony\Bundle\TwigBundle\TwigEngine
-namespace for generated Test: tps\UtilBundle\Tests\Tests\Stubs
-<?php
-namespace tps\UtilBundle\Tests\Tests\Stubs;
-
-use PHPUnit_Framework_MockObject_MockObject;
-use tps\UtilBundle\Tests\Stubs\ExampleClass;
-
-class ExampleClassTest extends \PHPUnit_Framework_TestCase
-{
-   /**
-    * @var PHPUnit_Framework_MockObject_MockObject|\Doctrine\ORM\EntityManager
-    */
-    private $entityManagerMock;
-   /**
-    * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Bundle\TwigBundle\TwigEngine
-    */
-    private $twigEngineMock;
-
-   /**
-    * @var PHPUnit_Framework_MockObject_MockObject|\tps\UtilBundle\Tests\Stubs\ExampleClass
-    */
-    private $exampleClass;
-
-    public function setUp()
-    {
-        $this->entityManagerMock = $this->getMockBuilder(\'Doctrine\ORM\EntityManager\')
-            ->disableOriginalConstructor()->getMock();
-        $this->twigEngineMock = $this->getMockBuilder(\'Symfony\Bundle\TwigBundle\TwigEngine\')
-            ->disableOriginalConstructor()->getMock();
-
-        $this->exampleClass = new ExampleClass(
-            $this->entityManagerMock,            $this->twigEngineMock
-        );
-    }
-}
-namespace for generated Test: tps\UtilBundle\Tests\Tests\Stubs
-';
 
         $client = $this->createClient();
         $application = new Application();
@@ -109,11 +108,17 @@ namespace for generated Test: tps\UtilBundle\Tests\Tests\Stubs
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'class' => 'tps\UtilBundle\Tests\Stubs\ExampleClass'
+            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ));
+        $this->assertEquals($this->expected, $commandTester->getDisplay());
 
-        $this->assertEquals($expected, $commandTester->getDisplay());
+    }
 
+    protected static function getKernelClass()
+    {
+        require_once __DIR__.'/../Fixtures/app/AppKernel.php';
+
+        return 'tps\UtilBundle\Tests\Command\AppKernel';
     }
 
     /**

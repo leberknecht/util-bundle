@@ -1,3 +1,7 @@
+## Instalation
+
+    "tps/util-bundle": "dev-master"
+    
 ## Generate Unit-tests from Services
 From time to time it happens that a dev looses the strict tests-first pattern and writes a service
 without a proper test, and later on he wants to add a phpunit-test for this service. 

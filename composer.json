@@ -19,13 +19,18 @@
         "symfony/framework-bundle":         ">=2.0.16,~2.0",
         "symfony/twig-bundle":              "*",
         "twig/twig":                        ">=1.0,<2.0-dev",
-        "sensio/framework-extra-bundle":    "*"
+        "sensio/framework-extra-bundle":    "*",
+        "symfony/validator":                "~2.3.0",
+        "symfony/translation":              "2.8.*@dev",
+        "symfony/form": "2.8.*@dev",
+        "symfony/console": "2.5.*@dev"
     },
 
     "require-dev": {
         "symfony/yaml":             ">=2.0.16,~2.0",
         "phpunit/phpunit":          "4.5.*@dev",
-        "satooshi/php-coveralls":   "0.7.*@dev"
+        "satooshi/php-coveralls":   "0.7.*@dev",
+        "symfony/browser-kit": "3.0.*@dev"
     },
 
     "autoload": {

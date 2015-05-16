@@ -68,7 +68,6 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
             $output->writeln('couldnt find "Bundle" in original class namespace');
             $testNamespace = $namespaceName . '\Tests';
         }
-        $output->writeln('namespace for generated Test: ' . $testNamespace);
         return $testNamespace;
     }
 
