@@ -102,7 +102,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
     {
         $dirGuess = 'src/' . str_replace('\\', '/', $this->getTestNamespace($reflectionClass, $output));
         $fullName = $dirGuess . '/' . $reflectionClass->getShortName() . 'Test.php';
-        $dialog = $this->getHelper('dialog');
+        $dialog = $this->getHelper('question');
         if (is_dir($dirGuess)) {
             $question = '<question>Create "' . $fullName . '"?</question>';
             if (is_file($fullName)) {
