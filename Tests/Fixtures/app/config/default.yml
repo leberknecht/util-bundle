@@ -2,7 +2,7 @@ framework:
     secret:        test
     csrf_protection:
         enabled: true
-    #router:        { resource: "%kernel.root_dir%/config/routing.yml" }
+    router:        { resource: "%kernel.root_dir%/config/routing.yml" }
     validation:    { enabled: true, enable_annotations: true }
     form: ~
     test: ~
@@ -16,3 +16,6 @@ framework:
 twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
+
+parameters:
+    fragment.renderer.hinclude.class: Symfony\Component\HttpKernel\Fragment\HIncludeFragmentRenderer

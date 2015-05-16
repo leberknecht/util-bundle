@@ -20,17 +20,18 @@
         "symfony/twig-bundle":              "*",
         "twig/twig":                        ">=1.0,<2.0-dev",
         "sensio/framework-extra-bundle":    "*",
-        "symfony/validator":                "~2.3.0",
-        "symfony/translation":              "2.8.*@dev",
-        "symfony/form": "2.8.*@dev",
-        "symfony/console": "2.5.*@dev"
+        "symfony/validator":                "~2.6.0",
+        "symfony/translation":              "~2.6.0",
+        "symfony/form":                     "~2.6.0",
+        "symfony/console":                  "~2.6.0"
     },
 
     "require-dev": {
-        "symfony/yaml":             ">=2.0.16,~2.0",
+        "symfony/yaml":             "~2.6.0",
         "phpunit/phpunit":          "4.5.*@dev",
         "satooshi/php-coveralls":   "0.7.*@dev",
-        "symfony/browser-kit": "3.0.*@dev"
+        "symfony/browser-kit":      "~2.6.0",
+        "symfony/routing":          "~2.6.0"
     },
 
     "autoload": {
