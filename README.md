@@ -1,3 +1,6 @@
+[![Build Status](https://api.travis-ci.org/leberknecht/util-bundle.png)](https://travis-ci.org/leberknecht/util-bundle)
+[![Coverage Status](https://coveralls.io/repos/leberknecht/util-bundle/badge.png)](https://coveralls.io/r/leberknecht/util-bundle)
+
 ## Installation
 
 Require the bundle via composer:
