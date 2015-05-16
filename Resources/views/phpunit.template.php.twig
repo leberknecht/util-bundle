@@ -1,10 +1,7 @@
 <?php
     namespace {{ test_namespace }};
 
-    {% for use_statement in use_statements %}
-    use {{ use_statement }};
-    {% endfor %}
-use PHPUnit_Framework_MockObject_MockObject;
+    use PHPUnit_Framework_MockObject_MockObject;
 
     class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
     {

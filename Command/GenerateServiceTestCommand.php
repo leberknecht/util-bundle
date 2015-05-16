@@ -32,27 +32,13 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
         }
 
         $reflectionClass = new \ReflectionClass($className);
-        $testNamespace = $this->getTestNamespace($output, $reflectionClass);
-
-
-        $parameters = $reflectionClass->getConstructor()->getParameters();
-        $useStatments = [];
-        $mocks = [];
-        foreach($parameters as $parameter) {
-            $parameterClass = $parameter->getClass();
-            $output->writeln('checking parameter ' . $parameterClass->getName());
-            $memberName = lcfirst($parameterClass->getShortName());
-            $mocks[] = [
-                'mocked_class_name' => $parameterClass->getName(),
-                'member_name' => $memberName,
-            ];
-        }
+        $mocks = $this->assembleMockInfo($reflectionClass, $output);
+        $testNamespace = $this->getTestNamespace($reflectionClass, $output);
         $serviceMemberName = lcfirst($reflectionClass->getShortName());
         $generatedCode = $this->templating->render(
             'UtilBundle::phpunit.template.php.twig',
             [
                 'test_namespace' => $testNamespace,
-                'use_statements' => $useStatments,
                 'original_short_name' => $reflectionClass->getShortName(),
                 'original_full_name' => $reflectionClass->getName(),
                 'service_member_name' => $serviceMemberName,
@@ -60,16 +46,14 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
             ]
         );
         $output->writeln($generatedCode);
-
-        throw new \LogicException('You must override the execute() method in the concrete command class.');
     }
 
     /**
-     * @param OutputInterface $output
      * @param \ReflectionClass $reflectionClass
+     * @param OutputInterface $output
      * @return mixed|string
      */
-    protected function getTestNamespace(OutputInterface $output, \ReflectionClass $reflectionClass)
+    protected function getTestNamespace(\ReflectionClass $reflectionClass, OutputInterface $output )
     {
         $namespaceName = $reflectionClass->getNamespaceName();
         if (strpos($namespaceName, 'Bundle')) {
@@ -80,5 +64,27 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
         }
         $output->writeln('namespace for generated Test: ' . $testNamespace);
         return $testNamespace;
+    }
+
+    /**
+     * @param \ReflectionClass $class
+     * @param OutputInterface $output
+     * @return array
+     */
+    protected function assembleMockInfo(\ReflectionClass $class, OutputInterface $output)
+    {
+        $mocksInfo = [];
+        $parameters = $class->getConstructor()->getParameters();
+        foreach($parameters as $parameter) {
+            $output->writeln('checking parameter ' . $parameter->getClass()->getName());
+            $parameterClass = $parameter->getClass();
+
+            $memberName = lcfirst($parameterClass->getShortName());
+            $mocksInfo[] = [
+                'mocked_class_name' => $parameterClass->getName(),
+                'member_name' => $memberName,
+            ];
+        }
+        return $mocksInfo;
     }
 }
