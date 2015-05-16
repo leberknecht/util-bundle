@@ -45,7 +45,20 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
                 'mocks' => $mocks
             ]
         );
-        $output->writeln($generatedCode);
+
+        $dirGuess = 'src/' . str_replace('\\', '/', $testNamespace);
+        $fullName = $dirGuess . '/' . $reflectionClass->getShortName() . 'Test.php';
+        $dialog = $this->getHelper('dialog');
+        if (is_dir($dirGuess) && $dialog->askConfirmation(
+                $output,
+                '<question>Create "'.$fullName.'"?</question>',
+                false
+            )) {
+                file_put_contents($fullName, $generatedCode);
+                return;
+        } else {
+            $output->writeln($generatedCode);
+        }
     }
 
     /**
