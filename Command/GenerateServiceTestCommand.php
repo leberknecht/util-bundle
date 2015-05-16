@@ -1,5 +1,5 @@
 <?php
-namespace Selenior\UtilBundle\Command;
+namespace tps\UtilBundle\Command;
 
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -9,7 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateServiceTestCommand extends ContainerAwareCommand
 {
-
     /**
      * @var TwigEngine
      */
@@ -18,7 +17,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
     public function configure()
     {
         $this
-            ->setName('selenior:util:generate-service-test')
+            ->setName('tps:util:generate-service-test')
             ->addArgument('class', InputArgument::REQUIRED, 'fq class name of service')
             ->setDescription('Generates a basic php-unit file with mocked services');
     }
