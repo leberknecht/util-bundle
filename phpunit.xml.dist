@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="./Tests/bootstrap.php" colors="true" forceCoversAnnotation="false">
+    <testsuites>
+        <testsuite name="UtilBundle test suite">
+            <directory suffix="Test.php">./Tests</directory>
+        </testsuite>
+    </testsuites>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
+    <filter>
+        <whitelist>
+            <directory>./Command</directory>
+            <directory>./DependencyInjection</directory>
+        </whitelist>
+    </filter>
+</phpunit>

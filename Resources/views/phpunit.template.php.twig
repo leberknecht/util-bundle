@@ -1,0 +1,36 @@
+<?php
+    namespace {{ test_namespace }};
+
+    {% for use_statement in use_statements %}
+    use {{ use_statement }};
+    {% endfor %}
+use PHPUnit_Framework_MockObject_MockObject;
+
+    class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
+    {
+{% for mock in mocks %}
+       /**
+        * @var PHPUnit_Framework_MockObject_MockObject|{{ mock.mocked_class_name }}
+        */
+        private ${{ mock.member_name }};
+        {% endfor %}
+
+        /**
+        * @var PHPUnit_Framework_MockObject_MockObject|{{ original_full_name }}
+        */
+        private ${{ service_member_name }};
+
+        public function setUp()
+        {
+{% for mock in mocks %}
+            $this->{{ mock.member_name }} = $this->getMockBuilder('{{ mock.mocked_class_name }}')
+                ->disableOriginalConstructor()->getMock();
+{% endfor %}
+
+            $this->{{ service_member_name }} = new {{ original_short_name }}(
+{% for mock in mocks %}
+                $this->${{ mock.member_name }},
+{% endfor %}
+            );
+        }
+    }

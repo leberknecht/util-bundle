@@ -1,0 +1,37 @@
+{
+    "name": "tps/util-bundle",
+    "type": "symfony-bundle",
+    "version": "0.1.0",
+    "description": "the bundle offers some helpful..helpers :D for developing sf2 apps",
+    "homepage": "https://github.com/leberknecht/util-bundle",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Delf Tonder",
+            "homepage": "https://github.com/leberknecht/util-bundle"
+        }
+    ],
+
+    "require": {
+        "php":                              ">=5.3.2",
+        "symfony/finder":                   ">=2.0.16,~2.0",
+        "symfony/filesystem":               ">=2.0.16,~2.0",
+        "symfony/framework-bundle":         ">=2.0.16,~2.0",
+        "symfony/twig-bundle":              "*",
+        "twig/twig":                        ">=1.0,<2.0-dev",
+        "sensio/framework-extra-bundle":    "*",
+        "psr/log":                          "1.0.0"
+    },
+
+    "require-dev": {
+        "symfony/yaml":             ">=2.0.16,~2.0",
+        "phpunit/phpunit":          "4.5.*@dev",
+        "satooshi/php-coveralls":   "0.7.*@dev"
+    },
+
+    "autoload": {
+        "psr-0": { "tps\\UtilBundle": "" }
+    },
+
+    "target-dir": "tps/UtilBundle"
+}
