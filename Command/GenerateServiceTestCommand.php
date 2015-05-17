@@ -3,9 +3,13 @@ namespace tps\UtilBundle\Command;
 
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Helper\DialogHelper;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\HttpKernel\Kernel;
 
 class GenerateServiceTestCommand extends ContainerAwareCommand
 {
@@ -13,6 +17,14 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
      * @var TwigEngine
      */
     private $templating;
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+    /**
+     * @var InputInterface
+     */
+    private $input;
 
     public function configure()
     {
@@ -25,11 +37,14 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int|null|void
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->templating = $this->getContainer()->get('templating');
+        $this->output = $output;
+        $this->input = $input;
 
         $className = $input->getArgument('class');
         if (!class_exists($className)) {
@@ -37,8 +52,8 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
         }
 
         $reflectionClass = new \ReflectionClass($className);
-        $mocks = $this->assembleMockInfo($reflectionClass, $output);
-        $testNamespace = $this->getTestNamespace($reflectionClass, $output);
+        $mocks = $this->assembleMockInfo($reflectionClass);
+        $testNamespace = $this->getTestNamespace($reflectionClass);
         $serviceMemberName = lcfirst($reflectionClass->getShortName());
         $generatedCode = $this->templating->render(
             'UtilBundle::phpunit.template.php.twig',
@@ -50,22 +65,21 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
                 'mocks' => $mocks
             ]
         );
-        $output->writeln($generatedCode);
-        $this->writeTestFile($output, $reflectionClass, $generatedCode);
+        $this->output->writeln($generatedCode);
+        $this->writeTestFile($reflectionClass, $generatedCode);
     }
 
     /**
      * @param \ReflectionClass $reflectionClass
-     * @param OutputInterface $output
      * @return mixed|string
      */
-    protected function getTestNamespace(\ReflectionClass $reflectionClass, OutputInterface $output )
+    protected function getTestNamespace(\ReflectionClass $reflectionClass )
     {
         $namespaceName = $reflectionClass->getNamespaceName();
         if (strpos($namespaceName, 'Bundle')) {
             $testNamespace = str_replace('Bundle', 'Bundle\Tests', $namespaceName);
         } else {
-            $output->writeln('couldnt find "Bundle" in original class namespace');
+            $this->output->writeln('<error>couldnt find "Bundle" in original class namespace</error>');
             $testNamespace = $namespaceName . '\Tests';
         }
         return $testNamespace;
@@ -73,15 +87,14 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
 
     /**
      * @param \ReflectionClass $class
-     * @param OutputInterface $output
      * @return array
      */
-    protected function assembleMockInfo(\ReflectionClass $class, OutputInterface $output)
+    protected function assembleMockInfo(\ReflectionClass $class)
     {
         $mocksInfo = [];
         $parameters = $class->getConstructor()->getParameters();
         foreach($parameters as $parameter) {
-            $output->writeln('checking parameter ' . $parameter->getClass()->getName());
+            $this->output->writeln('checking parameter ' . $parameter->getClass()->getName());
             $parameterClass = $parameter->getClass();
 
             $memberName = lcfirst($parameterClass->getShortName()) . 'Mock';
@@ -94,23 +107,32 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param OutputInterface $output
-     * @param $reflectionClass
+     * @param \ReflectionClass $reflectionClass
      * @param $generatedCode
      */
-    protected function writeTestFile(OutputInterface $output, $reflectionClass, $generatedCode)
+    protected function writeTestFile(\ReflectionClass $reflectionClass, $generatedCode)
     {
-        $dirGuess = 'src/' . str_replace('\\', '/', $this->getTestNamespace($reflectionClass, $output));
+        $dirGuess = 'src/' . str_replace('\\', '/', $this->getTestNamespace($reflectionClass));
         $fullName = $dirGuess . '/' . $reflectionClass->getShortName() . 'Test.php';
-        $dialog = $this->getHelper('question');
+
         if (is_dir($dirGuess)) {
             $question = '<question>Create "' . $fullName . '"?</question>';
             if (is_file($fullName)) {
-                $output->writeln('<error>File "' . $fullName . '" exists!<error>');
+                $this->output->writeln('<error>File "' . $fullName . '" exists!<error>');
                 $question = '<question>Overwrite file "' . $fullName . '"?</question>';
             }
-            if ($dialog->askConfirmation($output, $question, false)) {
-                file_put_contents($fullName, $generatedCode);
+            if (version_compare(Kernel::VERSION, '2.5.0', '>=')) {
+                /** @var QuestionHelper $questionHelper */
+                $questionHelper = $this->getHelper('question');
+                if ($questionHelper->ask($this->input, $this->output, new Question($question, false))) {
+                    file_put_contents($fullName, $generatedCode);
+                }
+            } else {
+                /** @var DialogHelper $dialogHelper */
+                $dialogHelper = $this->getHelper('dialog');
+                if ($dialogHelper->askConfirmation($this->output, $question, false)) {
+                    file_put_contents($fullName, $generatedCode);
+                }
             }
         }
     }

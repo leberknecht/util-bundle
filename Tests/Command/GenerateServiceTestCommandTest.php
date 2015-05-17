@@ -2,10 +2,13 @@
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\Kernel;
 use tps\UtilBundle\Command\GenerateServiceTestCommand;
 
 class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test\WebTestCase
 {
+    const EXPECTED_DIR = 'src/tps/UtilBundle/Tests/Tests/Fixtures';
+    const EXPECTED_FILE = 'src/tps/UtilBundle/Tests/Tests/Fixtures/ExampleClassTest.php';
     /**
      * @var \Symfony\Component\HttpKernel\Kernel | \PHPUnit_Framework_MockObject_MockObject
      */
@@ -18,6 +21,14 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
      * @var \Symfony\Bundle\TwigBundle\TwigEngine | \PHPUnit_Framework_MockObject_MockObject
      */
     private $twigMock;
+    /**
+     * @var \Symfony\Component\Console\Helper\QuestionHelper | \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $questionHelperMock;
+    /**
+     * @var \Symfony\Component\Console\Helper\DialogHelper | \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $dialogHelperMock;
 
     private $expected ='checking parameter Symfony\Component\Form\Form
 checking parameter Symfony\Bundle\TwigBundle\TwigEngine
@@ -57,12 +68,22 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
 }
 ';
 
+
+    public function setUp()
+    {
+        $this->clearTempFiles();
+        $this->containerMock = $this->shortGetMock('Symfony\Component\DependencyInjection\Container');
+        $this->twigMock = $this->shortGetMock('Symfony\Bundle\TwigBundle\TwigEngine');
+        $this->kernelMock = $this->shortGetMock('Symfony\Component\HttpKernel\Kernel');
+        $this->questionHelperMock = $this->shortGetMock('Symfony\Component\Console\Helper\QuestionHelper');
+        $this->dialogHelperMock = $this->shortGetMock('Symfony\Component\Console\Helper\DialogHelper');
+        $this->kernelMock->expects($this->any())
+            ->method('getContainer')->willReturn($this->containerMock);
+    }
+
     public function testExecuteMissingClass()
     {
-        $application = new Application();
-        $application->add(new GenerateServiceTestCommand());
-
-        $command = $application->find('tps:util:generate-service-test');
+        $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
         $this->setExpectedException('RuntimeException');
         $commandTester->execute(['command' => $command->getName()]);
@@ -70,24 +91,14 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
 
     public function testExecuteInvalidClass()
     {
-        $this->containerMock = $this->shortGetMock('Symfony\Component\DependencyInjection\Container');
-        $this->twigMock = $this->shortGetMock('Symfony\Bundle\TwigBundle\TwigEngine');
-        $this->kernelMock = $this->shortGetMock('Symfony\Component\HttpKernel\Kernel');
+        $command = $this->getCommandWithMocks();
+        $commandTester = new CommandTester($command);
 
-        $this->kernelMock->expects($this->any())
-            ->method('getContainer')->willReturn($this->containerMock);
         $this->containerMock->expects($this->once())
             ->method('get')
             ->with('templating')
             ->willReturn($this->twigMock);
 
-        $application = new Application($this->kernelMock);
-        $generateServiceTestCommand = new GenerateServiceTestCommand();
-        $generateServiceTestCommand->setContainer($this->kernelMock->getContainer());
-        $application->add($generateServiceTestCommand);
-
-        $command = $application->find('tps:util:generate-service-test');
-        $commandTester = new CommandTester($command);
         $this->setExpectedException('Exception', 'class not found');
         $commandTester->execute([
             'command' => $command->getName(),
@@ -95,9 +106,68 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
+    public function testExecuteValidFileWrite()
+    {
+        $command = $this->getCommandWithMocks();
+        $commandTester = new CommandTester($command);
+
+        $this->containerMock->expects($this->once())
+            ->method('get')
+            ->with('templating')
+            ->willReturn($this->twigMock);
+        $this->twigMock->expects($this->once())
+            ->method('render')
+            ->willReturn('test successfull');
+
+        mkdir(self::EXPECTED_DIR, 0777, true);
+        $this->questionHelperMock->expects($this->any())
+            ->method('ask')
+            ->willReturn(true);
+        $this->dialogHelperMock->expects($this->any())
+            ->method('askConfirmation')
+            ->willReturn(true);
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
+        ]);
+        $fileContents = file_get_contents(self::EXPECTED_FILE);
+        $this->clearTempFiles();
+        $this->assertEquals('test successfull', $fileContents);
+    }
+
+    public function testExecuteValidDontOverwrite()
+    {
+        $this->containerMock->expects($this->once())
+            ->method('get')
+            ->with('templating')
+            ->willReturn($this->twigMock);
+        $this->twigMock->expects($this->once())
+            ->method('render')
+            ->willReturn('test successfull');
+
+        $command = $this->getCommandWithMocks();
+        $commandTester = new CommandTester($command);
+        mkdir(self::EXPECTED_DIR, 0777, true);
+        file_put_contents(self::EXPECTED_FILE, 'dont kill me');
+        $this->questionHelperMock->expects($this->any())
+            ->method('ask')
+            ->willReturn(false);
+        $this->dialogHelperMock->expects($this->any())
+            ->method('askConfirmation')
+            ->willReturn(false);
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
+        ]);
+        $fileContents = file_get_contents(self::EXPECTED_FILE);
+        $this->clearTempFiles();
+        $this->assertEquals('dont kill me', $fileContents);
+    }
+
     public function testExecuteValidClass()
     {
-
         $client = $this->createClient();
         $application = new Application();
         $generateServiceTestCommand = new GenerateServiceTestCommand();
@@ -111,7 +181,23 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
             'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ));
         $this->assertEquals($this->expected, $commandTester->getDisplay());
+    }
 
+    public function testExecuteValidClassFilewrite()
+    {
+        $client = $this->createClient();
+        $application = new Application();
+        $generateServiceTestCommand = new GenerateServiceTestCommand();
+        $generateServiceTestCommand->setContainer($client->getContainer());
+        $application->add($generateServiceTestCommand);
+
+        $command = $application->find('tps:util:generate-service-test');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'command' => $command->getName(),
+            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
+        ));
+        $this->assertEquals($this->expected, $commandTester->getDisplay());
     }
 
     protected static function getKernelClass()
@@ -139,6 +225,31 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         }
 
         return $mb->getMock();
+    }
+
+    private function clearTempFiles()
+    {
+        @unlink(self::EXPECTED_FILE);
+        @rmdir(self::EXPECTED_DIR);
+    }
+
+    /**
+     * @return \Symfony\Component\Console\Command\Command
+     */
+    private function getCommandWithMocks()
+    {
+        $application = new Application($this->kernelMock);
+        $generateServiceTestCommand = new GenerateServiceTestCommand();
+        $generateServiceTestCommand->setContainer($this->kernelMock->getContainer());
+        $application->add($generateServiceTestCommand);
+        $command = $application->find('tps:util:generate-service-test');
+        if (version_compare(Kernel::VERSION, '2.5.0', '>=')) {
+            $command->getHelperSet()->set($this->questionHelperMock, 'question');
+        } else {
+            $command->getHelperSet()->set($this->dialogHelperMock, 'dialog');
+        }
+
+        return $command;
     }
 
 }
