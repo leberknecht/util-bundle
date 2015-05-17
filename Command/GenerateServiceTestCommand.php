@@ -121,19 +121,27 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
                 $this->output->writeln('<error>File "' . $fullName . '" exists!<error>');
                 $question = '<question>Overwrite file "' . $fullName . '"?</question>';
             }
-            if (version_compare(Kernel::VERSION, '2.5.0', '>=')) {
-                /** @var QuestionHelper $questionHelper */
-                $questionHelper = $this->getHelper('question');
-                if ($questionHelper->ask($this->input, $this->output, new Question($question, false))) {
-                    file_put_contents($fullName, $generatedCode);
-                }
-            } else {
-                /** @var DialogHelper $dialogHelper */
-                $dialogHelper = $this->getHelper('dialog');
-                if ($dialogHelper->askConfirmation($this->output, $question, false)) {
-                    file_put_contents($fullName, $generatedCode);
-                }
+            if ($this->askQuestion($question)){
+                file_put_contents($fullName, $generatedCode);
             }
+        }
+    }
+
+    /**
+     * @param $question
+     * @return string
+     * @@codeCoverageIgnore
+     */
+    protected function askQuestion($question)
+    {
+        if (version_compare(Kernel::VERSION, '2.5.0', '>=')) {
+            /** @var QuestionHelper $questionHelper */
+            $questionHelper = $this->getHelper('question');
+            return $questionHelper->ask($this->input, $this->output, new Question($question, false));
+        } else {
+            /** @var DialogHelper $dialogHelper */
+            $dialogHelper = $this->getHelper('dialog');
+            return $dialogHelper->askConfirmation($this->output, $question, false);
         }
     }
 }
