@@ -23,8 +23,7 @@
         "symfony/validator":                ">=2.3.0",
         "symfony/translation":              ">=2.3.0",
         "symfony/form":                     ">=2.3.0",
-        "symfony/console":                  ">=2.3.0",
-        "symfony/symfony": "~3.0"
+        "symfony/console":                  ">=2.3.0"
     },
 
     "require-dev": {
