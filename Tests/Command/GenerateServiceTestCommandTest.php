@@ -166,7 +166,7 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('dont kill me', $fileContents);
     }
 
-    public function testExecuteValidClass()
+    public function testExecuteValidClassWithRendering()
     {
         $client = $this->createClient();
         $application = new Application();
@@ -198,6 +198,23 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
             'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ));
         $this->assertEquals($this->expected, $commandTester->getDisplay());
+    }
+
+    public function testNoBundleInClassName()
+    {
+        $client = $this->createClient();
+        $application = new Application();
+        $generateServiceTestCommand = new GenerateServiceTestCommand();
+        $generateServiceTestCommand->setContainer($client->getContainer());
+        $application->add($generateServiceTestCommand);
+
+        $command = $application->find('tps:util:generate-service-test');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'command' => $command->getName(),
+            'class' => 'tps\Util\Tests\Fixtures\WeirdClass'
+        ));
+        $this->assertContains('namespace tps\Util\Tests\Fixtures\Tests;', $commandTester->getDisplay());
     }
 
     protected static function getKernelClass()
