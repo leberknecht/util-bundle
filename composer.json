@@ -41,5 +41,5 @@
         ]
     },
 
-    "target-dir": "tps/util-bundle"
+    "target-dir": "Tps/UtilBundle"
 }
