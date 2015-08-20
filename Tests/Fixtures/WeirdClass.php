@@ -3,7 +3,7 @@
 
 namespace Tps\Util\Tests\Fixtures;
 
-use tps\UtilBundle\Tests\Fixtures\ExampleClass;
+use Tps\UtilBundle\Tests\Fixtures\ExampleClass;
 
 class WeirdClass extends ExampleClass
 {

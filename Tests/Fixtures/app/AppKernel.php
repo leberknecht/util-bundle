@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use tps\UtilBundle\TpsUtilBundle;
+use Tps\UtilBundle\TpsUtilBundle;
 
 /**
  * App Test Kernel for functional tests.
