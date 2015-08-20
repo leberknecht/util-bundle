@@ -35,7 +35,7 @@
     },
 
     "autoload": {
-        "psr-0": { "tps\\UtilBundle": "" },
+        "psr-0": { "Tps\\UtilBundle": "" },
         "classmap": [
             "Tests/Fixtures"
         ]
