@@ -3,7 +3,7 @@
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpKernel\Kernel;
-use tps\UtilBundle\Command\GenerateServiceTestCommand;
+use Tps\UtilBundle\Command\GenerateServiceTestCommand;
 
 class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test\WebTestCase
 {
