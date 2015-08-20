@@ -1,5 +1,5 @@
 <?php
-namespace tps\UtilBundle\Command;
+namespace Tps\UtilBundle\Command;
 
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -56,7 +56,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
         $testNamespace = $this->getTestNamespace($reflectionClass);
         $serviceMemberName = lcfirst($reflectionClass->getShortName());
         $generatedCode = $this->templating->render(
-            'UtilBundle::phpunit.template.php.twig',
+            'TpsUtilBundle::phpunit.template.php.twig',
             [
                 'test_namespace' => $testNamespace,
                 'original_short_name' => $reflectionClass->getShortName(),

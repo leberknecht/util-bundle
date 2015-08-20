@@ -1,7 +1,7 @@
 <?php
 
 
-namespace tps\Util\Tests\Fixtures;
+namespace Tps\Util\Tests\Fixtures;
 
 use tps\UtilBundle\Tests\Fixtures\ExampleClass;
 

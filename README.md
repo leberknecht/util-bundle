@@ -16,6 +16,15 @@ Or add to composer.json:
         "tps/util-bundle": "dev-master"
     },
 
+Activate in AppKernel.php:
+
+```php
+$bundles = [
+    [...]
+    new Tps\UtilBundle\TpsUtilBundle()
+]
+```
+
 ## Generate unit-tests from service classes
 From time to time it happens that a dev looses the strict tests-first pattern and writes a service
 without a proper test, and later on he wants to add a phpunit-test for this service. 

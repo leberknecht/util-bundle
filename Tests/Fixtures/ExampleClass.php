@@ -1,6 +1,6 @@
 <?php
 
-namespace tps\UtilBundle\Tests\Fixtures;
+namespace Tps\UtilBundle\Tests\Fixtures;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\TwigBundle\TwigEngine;

@@ -7,8 +7,8 @@ use tps\UtilBundle\Command\GenerateServiceTestCommand;
 
 class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test\WebTestCase
 {
-    const EXPECTED_DIR = 'src/tps/UtilBundle/Tests/Tests/Fixtures';
-    const EXPECTED_FILE = 'src/tps/UtilBundle/Tests/Tests/Fixtures/ExampleClassTest.php';
+    const EXPECTED_DIR = 'src/Tps/UtilBundle/Tests/Tests/Fixtures';
+    const EXPECTED_FILE = 'src/Tps/UtilBundle/Tests/Tests/Fixtures/ExampleClassTest.php';
     /**
      * @var \Symfony\Component\HttpKernel\Kernel | \PHPUnit_Framework_MockObject_MockObject
      */
@@ -33,10 +33,10 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
     private $expected ='checking parameter Symfony\Component\Form\Form
 checking parameter Symfony\Bundle\TwigBundle\TwigEngine
 <?php
-namespace tps\UtilBundle\Tests\Tests\Fixtures;
+namespace Tps\UtilBundle\Tests\Tests\Fixtures;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use tps\UtilBundle\Tests\Fixtures\ExampleClass;
+use Tps\UtilBundle\Tests\Fixtures\ExampleClass;
 
 class ExampleClassTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,7 +50,7 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
     private $twigEngineMock;
 
    /**
-    * @var PHPUnit_Framework_MockObject_MockObject|\tps\UtilBundle\Tests\Fixtures\ExampleClass
+    * @var PHPUnit_Framework_MockObject_MockObject|\Tps\UtilBundle\Tests\Fixtures\ExampleClass
     */
     private $exampleClass;
 
@@ -129,7 +129,7 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
 
         $commandTester->execute([
             'command' => $command->getName(),
-            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
+            'class' => 'Tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ]);
         $fileContents = file_get_contents(self::EXPECTED_FILE);
         $this->clearTempFiles();
@@ -159,7 +159,7 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
 
         $commandTester->execute([
             'command' => $command->getName(),
-            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
+            'class' => 'Tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ]);
         $fileContents = file_get_contents(self::EXPECTED_FILE);
         $this->clearTempFiles();
@@ -178,7 +178,7 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
+            'class' => 'Tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ));
         $this->assertEquals($this->expected, $commandTester->getDisplay());
     }
@@ -195,7 +195,7 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'class' => 'tps\UtilBundle\Tests\Fixtures\ExampleClass'
+            'class' => 'Tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ));
         $this->assertEquals($this->expected, $commandTester->getDisplay());
     }
@@ -212,16 +212,16 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            'class' => 'tps\Util\Tests\Fixtures\WeirdClass'
+            'class' => 'Tps\Util\Tests\Fixtures\WeirdClass'
         ));
-        $this->assertContains('namespace tps\Util\Tests\Fixtures\Tests;', $commandTester->getDisplay());
+        $this->assertContains('namespace Tps\Util\Tests\Fixtures\Tests;', $commandTester->getDisplay());
     }
 
     protected static function getKernelClass()
     {
         require_once __DIR__.'/../Fixtures/app/AppKernel.php';
 
-        return 'tps\UtilBundle\Tests\Command\AppKernel';
+        return 'Tps\UtilBundle\Tests\Command\AppKernel';
     }
 
     /**

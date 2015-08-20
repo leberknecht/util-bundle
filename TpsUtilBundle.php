@@ -1,9 +1,9 @@
 <?php
 
-namespace tps\UtilBundle;
+namespace Tps\UtilBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class UtilBundle extends Bundle
+class TpsUtilBundle extends Bundle
 {
 }

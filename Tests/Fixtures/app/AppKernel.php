@@ -1,22 +1,12 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-namespace tps\UtilBundle\Tests\Command;
+namespace Tps\UtilBundle\Tests\Command;
 
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Validator\ValidatorBuilder;
-use tps\UtilBundle\UtilBundle;
+use tps\UtilBundle\TpsUtilBundle;
 
 /**
  * App Test Kernel for functional tests.
@@ -33,7 +23,7 @@ class AppKernel extends Kernel
         return array(
             new FrameworkBundle(),
             new TwigBundle(),
-            new UtilBundle()
+            new TpsUtilBundle()
         );
     }
 
@@ -44,17 +34,18 @@ class AppKernel extends Kernel
 
     public function getCacheDir()
     {
-        return sys_get_temp_dir().'/'.Kernel::VERSION.'/tps-util-bundle/cache/'.$this->environment;
+        return sys_get_temp_dir(). DIRECTORY_SEPARATOR .Kernel::VERSION. DIRECTORY_SEPARATOR .
+        'Tps-util-bundle' . DIRECTORY_SEPARATOR . 'cache'. DIRECTORY_SEPARATOR . $this->environment;
     }
 
     public function getLogDir()
     {
-        return sys_get_temp_dir().'/'.Kernel::VERSION.'/tps-util-bundle/logs';
+        return sys_get_temp_dir(). DIRECTORY_SEPARATOR . Kernel::VERSION. DIRECTORY_SEPARATOR . 'Tps-util-bundle' . DIRECTORY_SEPARATOR . 'logs';
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config/'.$this->environment.'.yml');
+        $loader->load(__DIR__. DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR .$this->environment.'.yml');
     }
 
     public function serialize()
