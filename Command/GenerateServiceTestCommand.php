@@ -48,7 +48,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
 
         $className = $input->getArgument('class');
         if (!class_exists($className)) {
-            throw new \Exception('class not found');
+            throw new \Exception('class not found: ' . $className);
         }
 
         $reflectionClass = new \ReflectionClass($className);
