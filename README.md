@@ -31,5 +31,5 @@ without a proper test, and later on he wants to add a phpunit-test for this serv
 Your service probably has some dependencies in the constructor, and now you have to setup mocks for that.
 To generate a base template for a service test, run the command
 
-    app/console tps:util:generate-service-test Acme\DemoBundle\Service\MyService
+    app/console tps:util:generate-service-test "Acme\DemoBundle\Service\MyService"
 
