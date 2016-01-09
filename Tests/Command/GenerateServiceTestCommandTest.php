@@ -30,8 +30,9 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
      */
     private $dialogHelperMock;
 
-    private $expected ='checking parameter Symfony\Component\Form\Form
-checking parameter Symfony\Bundle\TwigBundle\TwigEngine
+    private $expected ='checking parameter testForm
+checking parameter templating
+checking parameter primitiveParameter
 <?php
 namespace Tps\UtilBundle\Tests\Tests\Fixtures;
 
@@ -48,6 +49,10 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
     * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Bundle\TwigBundle\TwigEngine
     */
     private $twigEngineMock;
+   /**
+    * @var int|string|boolean|array
+    */
+    private $primitiveParameter = null;
 
    /**
     * @var PHPUnit_Framework_MockObject_MockObject|\Tps\UtilBundle\Tests\Fixtures\ExampleClass
@@ -62,7 +67,9 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()->getMock();
 
         $this->exampleClass = new ExampleClass(
-            $this->formMock,            $this->twigEngineMock
+            $this->formMock,
+            $this->twigEngineMock,
+            $this->primitiveParameter
         );
     }
 }

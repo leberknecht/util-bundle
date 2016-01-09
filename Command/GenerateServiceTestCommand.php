@@ -102,11 +102,13 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
                 $mocksInfo[] = [
                         'mocked_class_name' => $parameterClass->getName(),
                         'member_name' => $memberName,
+                        'primitive' => false
                 ];
             } else {
                 $mocksInfo[] = [
-                        'mocked_class_name' => 'scalar',
+                        'mocked_class_name' => null,
                         'member_name' => $parameter->name,
+                        'primitive' => true
                 ];
             }
 

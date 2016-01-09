@@ -7,10 +7,17 @@ use {{ original_full_name }};
 class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
 {
 {% for mock in mocks %}
+{% if mock.primitive %}
+   /**
+    * @var int|string|boolean|array
+    */
+    private ${{ mock.member_name }} = null;
+{% else %}
    /**
     * @var PHPUnit_Framework_MockObject_MockObject|\{{ mock.mocked_class_name }}
     */
     private ${{ mock.member_name }};
+{% endif %}
 {% endfor %}
 
    /**
@@ -21,8 +28,10 @@ class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
 {% for mock in mocks %}
+{% if not mock.primitive %}
         $this->{{ mock.member_name }} = $this->getMockBuilder('{{ mock.mocked_class_name }}')
             ->disableOriginalConstructor()->getMock();
+{% endif %}
 {% endfor %}
 
         $this->{{ service_member_name }} = new {{ original_short_name }}(

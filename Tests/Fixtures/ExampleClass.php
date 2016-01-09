@@ -16,12 +16,19 @@ class ExampleClass {
      * @var TwigEngine
      */
     private $templating;
+    /**
+     * @var string
+     */
+    private $primitiveParameter;
 
     public function __construct(
         Form $testForm,
-        TwigEngine $templating)
+        TwigEngine $templating,
+        $primitiveParameter
+    )
     {
         $this->testForm = $testForm;
         $this->templating = $templating;
+        $this->primitiveParameter = $primitiveParameter;
     }
 }
