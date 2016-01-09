@@ -94,14 +94,22 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
         $mocksInfo = [];
         $parameters = $class->getConstructor()->getParameters();
         foreach($parameters as $parameter) {
-            $this->output->writeln('checking parameter ' . $parameter->getClass()->getName());
+            $this->output->writeln('checking parameter ' . $parameter->name);
             $parameterClass = $parameter->getClass();
 
-            $memberName = lcfirst($parameterClass->getShortName()) . 'Mock';
-            $mocksInfo[] = [
-                'mocked_class_name' => $parameterClass->getName(),
-                'member_name' => $memberName,
-            ];
+            if (!empty($parameterClass)) {
+                $memberName = lcfirst($parameterClass->getShortName()) . 'Mock';
+                $mocksInfo[] = [
+                        'mocked_class_name' => $parameterClass->getName(),
+                        'member_name' => $memberName,
+                ];
+            } else {
+                $mocksInfo[] = [
+                        'mocked_class_name' => 'scalar',
+                        'member_name' => $parameter->name,
+                ];
+            }
+
         }
         return $mocksInfo;
     }

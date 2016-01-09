@@ -27,7 +27,8 @@ class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
 
         $this->{{ service_member_name }} = new {{ original_short_name }}(
 {% for mock in mocks %}
-            $this->{{ mock.member_name }}{% if loop.length > 1 and not loop.last %},{% endif %}
+            $this->{{ mock.member_name }}{% if loop.length > 1 and not loop.last %},
+{% endif %}
 {% endfor %}
 
         );
