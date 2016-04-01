@@ -59,7 +59,12 @@ class TestGeneratorService
     protected function assembleMockInfo(\ReflectionClass $class)
     {
         $mocksInfo = [];
-        $parameters = $class->getConstructor()->getParameters();
+        if ($class->getConstructor()) {
+            $parameters = $class->getConstructor()->getParameters();
+        } else {
+            $parameters = [];
+        }
+        
         foreach ($parameters as $parameter) {
             $parameterClass = $parameter->getClass();
 
