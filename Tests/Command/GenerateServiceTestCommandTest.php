@@ -30,10 +30,12 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
      */
     private $dialogHelperMock;
 
-    private $expected ='checking parameter testForm
-checking parameter templating
-checking parameter primitiveParameter
-<?php
+    /**
+     * @var | \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $testGenerator;
+
+    private $expected ='<?php
 namespace Tps\UtilBundle\Tests\Tests\Fixtures;
 
 use PHPUnit_Framework_MockObject_MockObject;
@@ -75,7 +77,6 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
 }
 ';
 
-
     public function setUp()
     {
         $this->clearTempFiles();
@@ -84,6 +85,13 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $this->kernelMock = $this->shortGetMock('Symfony\Component\HttpKernel\Kernel');
         $this->questionHelperMock = $this->shortGetMock('Symfony\Component\Console\Helper\QuestionHelper');
         $this->dialogHelperMock = $this->shortGetMock('Symfony\Component\Console\Helper\DialogHelper');
+        $this->testGenerator = new \Tps\UtilBundle\Service\TestGeneratorService($this->twigMock);
+
+        $this->containerMock->expects($this->any())
+            ->method('get')
+            ->with('tps.test_generator')
+            ->willReturn($this->testGenerator);
+
         $this->kernelMock->expects($this->any())
             ->method('getContainer')->willReturn($this->containerMock);
     }
@@ -101,11 +109,6 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
 
-        $this->containerMock->expects($this->once())
-            ->method('get')
-            ->with('templating')
-            ->willReturn($this->twigMock);
-
         $this->setExpectedException('Exception', 'class not found');
         $commandTester->execute([
             'command' => $command->getName(),
@@ -118,10 +121,6 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
 
-        $this->containerMock->expects($this->once())
-            ->method('get')
-            ->with('templating')
-            ->willReturn($this->twigMock);
         $this->twigMock->expects($this->once())
             ->method('render')
             ->willReturn('test successfull');
@@ -147,7 +146,7 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
     {
         $this->containerMock->expects($this->once())
             ->method('get')
-            ->with('templating')
+            ->with('tps.test_generator')
             ->willReturn($this->twigMock);
         $this->twigMock->expects($this->once())
             ->method('render')

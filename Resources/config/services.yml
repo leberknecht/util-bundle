@@ -1,0 +1,5 @@
+services:
+  tps.test_generator:
+    class: Tps\UtilBundle\Service\TestGeneratorService
+    arguments:
+      - '@templating'

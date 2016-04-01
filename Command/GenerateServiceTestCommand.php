@@ -9,14 +9,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Tps\UtilBundle\Service\TestGeneratorService;
 
 class GenerateServiceTestCommand extends ContainerAwareCommand
 {
-    /**
-     * @var TwigEngine
-     */
-    private $templating;
     /**
      * @var OutputInterface
      */
@@ -25,6 +23,10 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
      * @var InputInterface
      */
     private $input;
+    /**
+     * @var TestGeneratorService
+     */
+    private $testGeneratorService;
 
     public function configure()
     {
@@ -34,6 +36,12 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
             ->setDescription('Generates a base php-unit file with mocked services');
     }
 
+    public function setContainer(ContainerInterface $container = null)
+    {
+        parent::setContainer($container);
+        $this->testGeneratorService = $container->get('tps.test_generator');
+    }
+    
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -42,7 +50,6 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->templating = $this->getContainer()->get('templating');
         $this->output = $output;
         $this->input = $input;
 
@@ -51,79 +58,24 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
             throw new \Exception('class not found: ' . $className);
         }
 
-        $reflectionClass = new \ReflectionClass($className);
-        $mocks = $this->assembleMockInfo($reflectionClass);
-        $testNamespace = $this->getTestNamespace($reflectionClass);
-        $serviceMemberName = lcfirst($reflectionClass->getShortName());
-        $generatedCode = $this->templating->render(
-            'TpsUtilBundle::phpunit.template.php.twig',
-            [
-                'test_namespace' => $testNamespace,
-                'original_short_name' => $reflectionClass->getShortName(),
-                'original_full_name' => $reflectionClass->getName(),
-                'service_member_name' => $serviceMemberName,
-                'mocks' => $mocks
-            ]
-        );
+        $generatedCode = $this->testGeneratorService->generateTemplate($className);
         $this->output->writeln($generatedCode);
-        $this->writeTestFile($reflectionClass, $generatedCode);
+        $this->writeTestFile(
+            $this->testGeneratorService->getTestNamespace($className),
+            (new \ReflectionClass($className))->getShortName(),
+            $generatedCode
+        );
     }
 
     /**
-     * @param \ReflectionClass $reflectionClass
-     * @return mixed|string
-     */
-    protected function getTestNamespace(\ReflectionClass $reflectionClass )
-    {
-        $namespaceName = $reflectionClass->getNamespaceName();
-        if (strpos($namespaceName, 'Bundle')) {
-            $testNamespace = str_replace('Bundle', 'Bundle\Tests', $namespaceName);
-        } else {
-            $this->output->writeln('<error>couldnt find "Bundle" in original class namespace</error>');
-            $testNamespace = $namespaceName . '\Tests';
-        }
-        return $testNamespace;
-    }
-
-    /**
-     * @param \ReflectionClass $class
-     * @return array
-     */
-    protected function assembleMockInfo(\ReflectionClass $class)
-    {
-        $mocksInfo = [];
-        $parameters = $class->getConstructor()->getParameters();
-        foreach($parameters as $parameter) {
-            $this->output->writeln('checking parameter ' . $parameter->name);
-            $parameterClass = $parameter->getClass();
-
-            if (!empty($parameterClass)) {
-                $memberName = lcfirst($parameterClass->getShortName()) . 'Mock';
-                $mocksInfo[] = [
-                        'mocked_class_name' => $parameterClass->getName(),
-                        'member_name' => $memberName,
-                        'primitive' => false
-                ];
-            } else {
-                $mocksInfo[] = [
-                        'mocked_class_name' => null,
-                        'member_name' => $parameter->name,
-                        'primitive' => true
-                ];
-            }
-
-        }
-        return $mocksInfo;
-    }
-
-    /**
-     * @param \ReflectionClass $reflectionClass
+     * @param $pathGuess
+     * @param $shortname
      * @param $generatedCode
      */
-    protected function writeTestFile(\ReflectionClass $reflectionClass, $generatedCode)
+    protected function writeTestFile($pathGuess, $shortname, $generatedCode)
     {
-        $dirGuess = 'src/' . str_replace('\\', '/', $this->getTestNamespace($reflectionClass));
-        $fullName = $dirGuess . '/' . $reflectionClass->getShortName() . 'Test.php';
+        $dirGuess = 'src/' . str_replace('\\', '/', $pathGuess);
+        $fullName = $dirGuess . '/' . $shortname . 'Test.php';
 
         if (is_dir($dirGuess)) {
             $question = '<question>Create "' . $fullName . '"?</question>';
@@ -131,7 +83,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
                 $this->output->writeln('<error>File "' . $fullName . '" exists!<error>');
                 $question = '<question>Overwrite file "' . $fullName . '"?</question>';
             }
-            if ($this->askQuestion($question)){
+            if ($this->askQuestion($question)) {
                 file_put_contents($fullName, $generatedCode);
             }
         }
