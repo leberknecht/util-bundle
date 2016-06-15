@@ -36,10 +36,9 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
             ->setDescription('Generates a base php-unit file with mocked services');
     }
 
-    public function setContainer(ContainerInterface $container = null)
+    protected function injectDependencies()
     {
-        parent::setContainer($container);
-        $this->testGeneratorService = $container->get('tps.test_generator');
+        $this->testGeneratorService = $this->getContainer->get('tps.test_generator');
     }
     
     /**
@@ -50,6 +49,8 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->injectDependencies();
+
         $this->output = $output;
         $this->input = $input;
 
