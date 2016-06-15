@@ -38,7 +38,7 @@ class GenerateServiceTestCommand extends ContainerAwareCommand
 
     protected function injectDependencies()
     {
-        $this->testGeneratorService = $this->getContainer->get('tps.test_generator');
+        $this->testGeneratorService = $this->getContainer()->get('tps.test_generator');
     }
     
     /**
