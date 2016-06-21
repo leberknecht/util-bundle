@@ -1,8 +1,8 @@
 {
     "name": "tps/util-bundle",
     "type": "symfony-bundle",
-    "version": "0.1.0",
-    "description": "the bundle offers some helpful..helpers :D for developing sf2 apps",
+    "version": "v1.0.0",
+    "description": "generate phpunit-templates for services, including mocked dependencies",
     "homepage": "https://github.com/leberknecht/util-bundle",
     "minimum-stability": "dev",
     "authors": [
