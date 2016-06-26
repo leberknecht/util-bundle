@@ -1,7 +1,7 @@
 {
     "name": "tps/util-bundle",
     "type": "symfony-bundle",
-    "version": "v1.0.0",
+    "version": "1.0.1",
     "description": "generate phpunit-templates for services, including mocked dependencies",
     "homepage": "https://github.com/leberknecht/util-bundle",
     "minimum-stability": "dev",
