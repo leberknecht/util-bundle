@@ -61,7 +61,7 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
     {
         $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
         $commandTester->execute(['command' => $command->getName()]);
     }
 
@@ -70,7 +70,7 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
         $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
 
-        $this->setExpectedException('Exception', 'class not found');
+        $this->expectException('Exception', 'class not found');
         $commandTester->execute([
             'command' => $command->getName(),
             'class' => 'ThisClassDoesntExistsHopefully'
