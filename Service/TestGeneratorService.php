@@ -72,6 +72,7 @@ class TestGeneratorService
                 $memberName = lcfirst($parameterClass->getShortName()) . 'Mock';
                 $mocksInfo[] = [
                     'mocked_class_name' => $parameterClass->getName(),
+                    'mocked_class_name_short' => $parameterClass->getShortName(),
                     'member_name' => $memberName,
                     'primitive' => false
                 ];

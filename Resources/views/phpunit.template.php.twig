@@ -1,8 +1,14 @@
 <?php
+
 namespace {{ test_namespace }};
 
 use PHPUnit_Framework_MockObject_MockObject;
 use {{ original_full_name }};
+{% for mock in mocks %}
+{% if not mock.primitive %}
+use {{ mock.mocked_class_name }};
+{% endif %}
+{% endfor %}
 
 class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
 {
@@ -29,7 +35,7 @@ class {{ original_short_name }}Test extends \PHPUnit_Framework_TestCase
     {
 {% for mock in mocks %}
 {% if not mock.primitive %}
-        $this->{{ mock.member_name }} = $this->getMockBuilder('{{ mock.mocked_class_name }}')
+        $this->{{ mock.member_name }} = $this->getMockBuilder({{ mock.mocked_class_name_short }}::class)
             ->disableOriginalConstructor()->getMock();
 {% endif %}
 {% endfor %}

@@ -1,0 +1,43 @@
+<?php
+
+namespace Tps\UtilBundle\Tests\Tests\Fixtures;
+
+use PHPUnit_Framework_MockObject_MockObject;
+use Tps\UtilBundle\Tests\Fixtures\ExampleClass;
+use Symfony\Component\Form\Form;
+use Symfony\Bundle\TwigBundle\TwigEngine;
+
+class ExampleClassTest extends \PHPUnit_Framework_TestCase
+{
+   /**
+    * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Form\Form
+    */
+    private $formMock;
+   /**
+    * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Bundle\TwigBundle\TwigEngine
+    */
+    private $twigEngineMock;
+   /**
+    * @var int|string|boolean|array
+    */
+    private $primitiveParameter = null;
+
+   /**
+    * @var PHPUnit_Framework_MockObject_MockObject|\Tps\UtilBundle\Tests\Fixtures\ExampleClass
+    */
+    private $exampleClass;
+
+    public function setUp()
+    {
+        $this->formMock = $this->getMockBuilder(Form::class)
+            ->disableOriginalConstructor()->getMock();
+        $this->twigEngineMock = $this->getMockBuilder(TwigEngine::class)
+            ->disableOriginalConstructor()->getMock();
+
+        $this->exampleClass = new ExampleClass(
+            $this->formMock,
+            $this->twigEngineMock,
+            $this->primitiveParameter
+        );
+    }
+}

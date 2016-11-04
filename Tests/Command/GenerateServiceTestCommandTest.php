@@ -35,51 +35,12 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
      */
     private $testGenerator;
 
-    private $expected ='<?php
-namespace Tps\UtilBundle\Tests\Tests\Fixtures;
-
-use PHPUnit_Framework_MockObject_MockObject;
-use Tps\UtilBundle\Tests\Fixtures\ExampleClass;
-
-class ExampleClassTest extends \PHPUnit_Framework_TestCase
-{
-   /**
-    * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Component\Form\Form
-    */
-    private $formMock;
-   /**
-    * @var PHPUnit_Framework_MockObject_MockObject|\Symfony\Bundle\TwigBundle\TwigEngine
-    */
-    private $twigEngineMock;
-   /**
-    * @var int|string|boolean|array
-    */
-    private $primitiveParameter = null;
-
-   /**
-    * @var PHPUnit_Framework_MockObject_MockObject|\Tps\UtilBundle\Tests\Fixtures\ExampleClass
-    */
-    private $exampleClass;
-
-    public function setUp()
-    {
-        $this->formMock = $this->getMockBuilder(\'Symfony\Component\Form\Form\')
-            ->disableOriginalConstructor()->getMock();
-        $this->twigEngineMock = $this->getMockBuilder(\'Symfony\Bundle\TwigBundle\TwigEngine\')
-            ->disableOriginalConstructor()->getMock();
-
-        $this->exampleClass = new ExampleClass(
-            $this->formMock,
-            $this->twigEngineMock,
-            $this->primitiveParameter
-        );
-    }
-}
-';
+    private $expected = null;
 
     public function setUp()
     {
         $this->clearTempFiles();
+        $this->expected = file_get_contents(__DIR__ . '/../Fixtures/expected.template');
         $this->containerMock = $this->shortGetMock('Symfony\Component\DependencyInjection\Container');
         $this->twigMock = $this->shortGetMock('Symfony\Bundle\TwigBundle\TwigEngine');
         $this->kernelMock = $this->shortGetMock('Symfony\Component\HttpKernel\Kernel');
@@ -129,9 +90,6 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $this->questionHelperMock->expects($this->any())
             ->method('ask')
             ->willReturn(true);
-        $this->dialogHelperMock->expects($this->any())
-            ->method('askConfirmation')
-            ->willReturn(true);
 
         $commandTester->execute([
             'command' => $command->getName(),
@@ -159,9 +117,6 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
         $this->questionHelperMock->expects($this->any())
             ->method('ask')
             ->willReturn(false);
-        $this->dialogHelperMock->expects($this->any())
-            ->method('askConfirmation')
-            ->willReturn(false);
 
         $commandTester->execute([
             'command' => $command->getName(),
@@ -186,6 +141,8 @@ class ExampleClassTest extends \PHPUnit_Framework_TestCase
             'command' => $command->getName(),
             'class' => 'Tps\UtilBundle\Tests\Fixtures\ExampleClass'
         ));
+        file_put_contents('t1.log', $this->expected);
+        file_put_contents('t2.log', $commandTester->getDisplay());
         $this->assertEquals($this->expected, $commandTester->getDisplay());
     }
 
