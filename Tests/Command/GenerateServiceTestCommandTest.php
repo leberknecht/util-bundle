@@ -243,7 +243,7 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
             if (!empty($message)) {
                 $this->expectExceptionMessage($message);
             }
-        } else if (method_exists($this, 'setPhpunitExpectedException')) {
+        } else if (method_exists($this, 'setExpectedException')) {
             $this->setExpectedException($name, $message);
         }
     }
