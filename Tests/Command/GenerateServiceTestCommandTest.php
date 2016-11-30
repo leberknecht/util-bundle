@@ -61,7 +61,7 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
     {
         $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
-        $this->setExpectedException('RuntimeException');
+        $this->setPhpunitExpectedException('RuntimeException');
         $commandTester->execute(['command' => $command->getName()]);
     }
 
@@ -70,7 +70,7 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
         $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
 
-        $this->setExpectedException('Exception', 'class not found');
+        $this->setPhpunitExpectedException('Exception', 'class not found');
         $commandTester->execute([
             'command' => $command->getName(),
             'class' => 'ThisClassDoesntExistsHopefully'
@@ -236,15 +236,15 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
      * @param string $name
      * @param null|string $message
      */
-    private function setExpectedException($name, $message = null)
+    private function setPhpunitExpectedException($name, $message = null)
     {
         if (method_exists($this, 'expectException')) {
             $this->expectException($name);
             if (!empty($message)) {
                 $this->expectExceptionMessage($message);
             }
-        } else if (method_exists($this, 'setExpectedException')) {
-            $this->setExpectedException($name, $message);
+        } else if (method_exists($this, 'setPhpunitExpectedException')) {
+            $this->setPhpunitExpectedException($name, $message);
         }
     }
 }
