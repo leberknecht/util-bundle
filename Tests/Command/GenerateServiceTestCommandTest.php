@@ -70,7 +70,7 @@ class GenerateServiceTestCommandTest extends Symfony\Bundle\FrameworkBundle\Test
         $command = $this->getCommandWithMocks();
         $commandTester = new CommandTester($command);
 
-        $this->setPhpunitExpectedException('Exception', 'class not found');
+        $this->setPhpunitExpectedException('Exception');
         $commandTester->execute([
             'command' => $command->getName(),
             'class' => 'ThisClassDoesntExistsHopefully'
